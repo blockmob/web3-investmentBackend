@@ -18,6 +18,7 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/auth', require('./src/routes/auth'));
+app.use('/api/users', require('./src/routes/userAuth'));
 app.use('/api/companies', require('./src/routes/company'));
 app.use('/api/campaigns', require('./src/routes/campaign'));
 
