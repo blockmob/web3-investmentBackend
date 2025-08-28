@@ -11,6 +11,7 @@ const companySchema = new mongoose.Schema(
     address: { type: String, required: true, trim: true },
     city: { type: String, required: true, trim: true },
     country: { type: String, required: true, trim: true },
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
 
     // Approval fields
     approved: { type: Boolean, default: false },

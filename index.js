@@ -21,6 +21,7 @@ app.use('/api/auth', require('./src/routes/auth'));
 app.use('/api/users', require('./src/routes/userAuth'));
 app.use('/api/companies', require('./src/routes/company'));
 app.use('/api/user/companies', require('./src/routes/userCompany'));
+app.use('/api/user/notifications', require('./src/routes/userNotification'));
 app.use('/api/campaigns', require('./src/routes/campaign'));
 
 // Start server only after DB connects
