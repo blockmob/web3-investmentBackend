@@ -110,7 +110,7 @@ exports.deny = async (req, res) => {
 exports.getById = async (req, res) => {
   try {
     const { id } = req.params;
-    const company = await Company.findById(id);
+    const company = await Company.findById(id).populate('campaigns');
     if (!company) return res.status(404).json({ message: 'Company not found' });
     return res.json(company);
   } catch (err) {

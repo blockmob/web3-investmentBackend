@@ -21,4 +21,17 @@ const companySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Virtual populate for campaigns belonging to the company
+companySchema.virtual('campaigns', {
+  ref: 'Campaign',
+  localField: '_id',
+  foreignField: 'company',
+  justOne: false,
+  options: { sort: { createdAt: -1 } },
+});
+
+// Ensure virtuals are included in JSON and object outputs
+companySchema.set('toJSON', { virtuals: true });
+companySchema.set('toObject', { virtuals: true });
+
 module.exports = mongoose.model('Company', companySchema);
