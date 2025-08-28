@@ -2,18 +2,21 @@ const Company = require('../models/Company');
 
 exports.create = async (req, res) => {
   try {
-    const { companyName, contactName, email, phone, website, description } = req.body;
-    if (!companyName || !contactName || !email || !phone || !description) {
+    const { companyName, registrationNumber, email, phone, website, industry, address, city, country } = req.body;
+    if (!companyName || !registrationNumber || !email || !phone || !industry || !address || !city || !country) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
     const company = await Company.create({
       companyName,
-      contactName,
+      registrationNumber,
       email: String(email).toLowerCase(),
       phone,
       website: website || null,
-      description,
+      industry,
+      address,
+      city,
+      country,
       approved: false,
       approvalStatus: 'pending',
       denialReason: null,
