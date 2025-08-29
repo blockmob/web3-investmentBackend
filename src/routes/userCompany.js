@@ -22,4 +22,10 @@ router.patch('/:id/kyc', companyController.updateKycStatusForUser);
 // Create a campaign under a company (user)
 router.post('/:companyId/campaigns', campaignController.createByUser);
 
+// List campaigns for my company
+router.get('/:companyId/campaigns', campaignController.getByCompanyIdForUser);
+
+// Get specific campaign under my company by id
+router.get('/:companyId/campaigns/:id', campaignController.getByIdForUser);
+
 module.exports = router;

@@ -287,3 +287,45 @@ exports.getById = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+// User-scoped: list campaigns for user's own company
+exports.getByCompanyIdForUser = async (req, res) => {
+  try {
+    const { companyId } = req.params;
+    const company = await Company.findById(companyId);
+    if (!company) return res.status(404).json({ message: 'Company not found' });
+    if (!company.owner || String(company.owner) !== String(req.user._id)) {
+      return res.status(403).json({ message: 'Forbidden: not your company' });
+    }
+    const campaigns = await Campaign.find({ company: companyId }).sort({ createdAt: -1 });
+    return res.json(campaigns);
+  } catch (err) {
+    console.error('Get campaigns by company (user) error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// User-scoped: get a campaign by id with ownership check
+exports.getByIdForUser = async (req, res) => {
+  try {
+    const { id, companyId } = req.params;
+    const campaign = await Campaign.findById(id);
+    if (!campaign) return res.status(404).json({ message: 'Campaign not found' });
+    // If companyId present in route, ensure it matches
+    if (companyId && String(campaign.company) !== String(companyId)) {
+      return res.status(404).json({ message: 'Campaign not found under this company' });
+    }
+    const company = await Company.findById(campaign.company);
+    if (!company) return res.status(404).json({ message: 'Company not found for campaign' });
+    if (!company.owner || String(company.owner) !== String(req.user._id)) {
+      return res.status(403).json({ message: 'Forbidden: not your company' });
+    }
+    return res.json(campaign);
+  } catch (err) {
+    if (err && err.name === 'CastError') {
+      return res.status(400).json({ message: 'Invalid campaign id' });
+    }
+    console.error('Get campaign by id (user) error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
