@@ -21,6 +21,9 @@ const campaignSchema = new Schema(
 
     approvalStatus: { type: String, enum: ['pending', 'approved', 'denied'], default: 'pending', index: true },
     denialReason: { type: String, default: null },
+
+    // Operational status of the campaign (e.g., whether it is live for investments)
+    status: { type: String, enum: ['draft', 'live', 'closed'], default: 'draft', index: true },
   },
   { timestamps: true }
 );

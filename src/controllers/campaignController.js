@@ -329,3 +329,45 @@ exports.getByIdForUser = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+// User-scoped: make a campaign live (only if approved)
+exports.makeLiveForUser = async (req, res) => {
+  try {
+    const { companyId, id } = req.params;
+    // Fetch campaign
+    const campaign = await Campaign.findById(id);
+    if (!campaign) return res.status(404).json({ message: 'Campaign not found' });
+    // Ensure campaign belongs to provided companyId
+    if (companyId && String(campaign.company) !== String(companyId)) {
+      return res.status(404).json({ message: 'Campaign not found under this company' });
+    }
+    // Ownership check on company
+    const company = await Company.findById(campaign.company);
+    if (!company) return res.status(404).json({ message: 'Company not found for campaign' });
+    if (!company.owner || String(company.owner) !== String(req.user._id)) {
+      return res.status(403).json({ message: 'Forbidden: not your company' });
+    }
+    // Only approved campaigns can go live
+    if (campaign.approvalStatus !== 'approved') {
+      return res.status(400).json({ message: 'Campaign must be approved before going live' });
+    }
+    // Ensure not already live or closed
+    if (campaign.status === 'live') {
+      return res.status(400).json({ message: 'Campaign is already live' });
+    }
+    if (campaign.status === 'closed') {
+      return res.status(400).json({ message: 'Campaign is closed and cannot be made live' });
+    }
+
+    campaign.status = 'live';
+    await campaign.save();
+
+    return res.json({ message: 'Campaign is now live', campaign });
+  } catch (err) {
+    if (err && err.name === 'CastError') {
+      return res.status(400).json({ message: 'Invalid campaign id' });
+    }
+    console.error('Make campaign live (user) error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};

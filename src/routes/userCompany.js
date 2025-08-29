@@ -28,4 +28,7 @@ router.get('/:companyId/campaigns', campaignController.getByCompanyIdForUser);
 // Get specific campaign under my company by id
 router.get('/:companyId/campaigns/:id', campaignController.getByIdForUser);
 
+// Make a campaign live (user)
+router.post('/:companyId/campaigns/:id/make-live', campaignController.makeLiveForUser);
+
 module.exports = router;
